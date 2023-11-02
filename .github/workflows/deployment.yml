@@ -18,4 +18,4 @@ jobs:
         run: dotnet build
       # プログラム実行
       - name: dotNet Run
-        run: dotnet run ./csharp/HatopopoNote/HatopopoNote/
+        run: dotnet run --project ./csharp/HatopopoNote/HatopopoNote/
