@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore ./csharp/HatopopoNote/HatopopoNote/
       - name: Test
-        run: dotnet build --no-build --verbosity normal ./csharp/HatopopoNote/HatopopoNote/
+        run: dotnet test --no-build --verbosity normal ./csharp/HatopopoNote/HatopopoNote/
       # プログラム実行
       - name: Run
         run: dotnet run --project ./csharp/HatopopoNote/HatopopoNote/
