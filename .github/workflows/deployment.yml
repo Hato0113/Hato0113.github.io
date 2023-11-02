@@ -1,4 +1,4 @@
-name: Deployment .NET Core 8.0
+name: Deployment .NET Core 7.0
 
 on:
   push:
@@ -13,9 +13,9 @@ jobs:
       - name: setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 7.0.x
       - name: dotNet Build Restore
         run: dotnet build
-      # ユニットテストを行う
-      - name: dotNet Unit Test
-        run: dotnet run
+      # プログラム実行
+      - name: dotNet Run
+        run: dotnet run ./csharp/HatopopoNote/HatopopoNote/
