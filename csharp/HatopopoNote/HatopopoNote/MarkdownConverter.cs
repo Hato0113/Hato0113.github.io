@@ -13,19 +13,28 @@ namespace HatopopoNote
 
 			// .mdのファイルを取得
 			var files = new List<FileInfo>();
-			foreach ( var file in targetDirectory.GetFiles("*.md",SearchOption.AllDirectories))
+			foreach (var file in targetDirectory.GetFiles("*.md", SearchOption.AllDirectories))
 			{
 				Console.WriteLine($"{file.FullName}");
+				files.Add(file);
 			}
 
 			// publicフォルダにmdを格納
-			var publicDirectory = Path.Combine(targetDirectory.Parent.FullName, "public");
-			foreach ( var file in files)
+			var publicDirectoryPath = Path.Combine(targetDirectory.Parent.FullName, "public");
+			foreach (var file in files)
 			{
-				var mdFilePah = file.FullName.Replace(targetDirectory.Parent.FullName, "");
-				File.Copy(file.FullName, Path.Combine(publicDirectory, mdFilePah));
+				var mdFilePath = file.FullName.Replace(targetDirectory.Parent.FullName + System.IO.Path.DirectorySeparatorChar, "");
 
+				Console.WriteLine(publicDirectoryPath);
+				Console.WriteLine(mdFilePath);
 
+				var mdFile = new FileInfo(Path.Combine(publicDirectoryPath, mdFilePath));
+				if (!mdFile.Directory.Exists)
+				{
+					Directory.CreateDirectory(mdFile.DirectoryName);
+				}
+
+				File.Copy(file.FullName, mdFile.FullName, true);
 			}
 		}
 
