@@ -17,6 +17,16 @@ namespace HatopopoNote
 			{
 				Console.WriteLine($"{file.FullName}");
 			}
+
+			// publicフォルダにmdを格納
+			var publicDirectory = Path.Combine(targetDirectory.Parent.FullName, "public");
+			foreach ( var file in files)
+			{
+				var mdFilePah = file.FullName.Replace(targetDirectory.Parent.FullName, "");
+				File.Copy(file.FullName, Path.Combine(publicDirectory, mdFilePah));
+
+
+			}
 		}
 
 		private bool TryGetTargetDirectory(out DirectoryInfo? targetDirectory)

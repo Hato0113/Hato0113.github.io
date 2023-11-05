@@ -17,6 +17,9 @@ concurrency:
 jobs:
 # C# run process
   build-csharp:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -36,15 +39,13 @@ jobs:
         run: dotnet run --project ./csharp/HatopopoNote/HatopopoNote/
 
 # build and deploy process
-  build-and-deploy:
-    needs: build-csharp
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #build-and-deploy:
+    #needs: build-csharp
+    
+    #runs-on: ubuntu-latest
+    #steps:
+      #- name: Checkout
+        #uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
