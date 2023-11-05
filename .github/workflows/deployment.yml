@@ -37,6 +37,7 @@ jobs:
 
 # build and deploy process
   build-and-deploy:
+    needs: build-csharp
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
