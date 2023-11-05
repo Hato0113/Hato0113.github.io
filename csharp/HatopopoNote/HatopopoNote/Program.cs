@@ -5,4 +5,4 @@ using HatopopoNote;
 Console.WriteLine("Hello, World!");
 
 var markdownConverter = new MarkdownConverter();
-markdownConverter.Execute();
+await markdownConverter.Execute();
