@@ -36,8 +36,6 @@ jobs:
         with:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-      - name: pnpm
-        uses: pnpm/action/setup@v2
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Use Node.js 16
@@ -45,9 +43,9 @@ jobs:
         with:
           node-version: 16
       - name: Install dependencies
-        run: pnpm i
+        run: npm install
       - name: Build Astro
-        run: pnpm build
+        run: npm run build
       - name: Uplaod artifact
         uses: actions/upload-pages-artifact@v1
         with:
