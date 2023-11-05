@@ -19,8 +19,8 @@ namespace HatopopoNote
 				files.Add(file);
 			}
 
-			// publicフォルダにmdを格納
-			await ProcessMarkdownFilesAsync(targetDirectory, files);
+			// publicフォルダにhtml形式に変換したmdを格納
+			await Contert2HtmlAsync(targetDirectory, files);
 		}
 
 		private bool TryGetTargetDirectory(out DirectoryInfo? targetDirectory)
@@ -43,9 +43,9 @@ namespace HatopopoNote
 			return false;
 		}
 
-		public async Task ProcessMarkdownFilesAsync(DirectoryInfo targetDirectory, List<FileInfo> files)
+		public async Task Contert2HtmlAsync(DirectoryInfo targetDirectory, List<FileInfo> files)
 		{
-			var publicDirectoryPath = Path.Combine(targetDirectory.Parent.FullName, "public");
+			var publicDirectoryPath = Path.Combine(targetDirectory!.Parent!.FullName, "public");
 
 			foreach (var file in files)
 			{
@@ -58,7 +58,7 @@ namespace HatopopoNote
 			var mdFilePath = GetRelativePath(targetDirectory, file);
 			var mdFile = new FileInfo(Path.Combine(publicDirectoryPath, mdFilePath));
 
-			await CreateDirectoryIfNotExistsAsync(mdFile.Directory);
+			await CreateDirectoryIfNotExistsAsync(mdFile.Directory!);
 
 			var lines = await ReadFileLinesAsync(file);
 			var parsedLines = ParseMarkdown(lines);
