@@ -56,6 +56,7 @@ namespace HatopopoNote
 		private async Task CreateAndWriteToFileAsync(string publicDirectoryPath, DirectoryInfo targetDirectory, FileInfo file)
 		{
 			var mdFilePath = GetRelativePath(targetDirectory, file);
+			mdFilePath = mdFilePath.Replace(".md",".html");
 			var mdFile = new FileInfo(Path.Combine(publicDirectoryPath, mdFilePath));
 
 			await CreateDirectoryIfNotExistsAsync(mdFile.Directory!);
