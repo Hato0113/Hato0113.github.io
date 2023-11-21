@@ -1,8 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using HatopopoNote;
-
-Console.WriteLine("Hello, World!");
+﻿using HatopopoNote;
 
 var markdownConverter = new MarkdownConverter();
-await markdownConverter.Execute();
+var res = await markdownConverter.Execute();
+if(!res) Console.WriteLine("Convert failed.");

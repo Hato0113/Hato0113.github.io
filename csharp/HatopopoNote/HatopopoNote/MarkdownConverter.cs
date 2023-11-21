@@ -1,28 +1,39 @@
 ﻿using System.Net.NetworkInformation;
+using System.Text;
 
 namespace HatopopoNote
 {
 	internal class MarkdownConverter
 	{
+		
 		private static readonly string MarkdownDirectoryName = "md";
+		private static readonly string TargetMarkdownExtension = "*.md";
 
-		public async Task Execute()
+		/// <summary>
+		/// 実行エントリポイント
+		/// </summary>
+		public async Task<bool> Execute()
 		{
-			if (!TryGetTargetDirectory(out var targetDirectory)) return;
+			if (!TryGetTargetDirectory(out var targetDirectory)) return false;
 			Console.WriteLine($"target : {targetDirectory!.FullName}");
+			if (targetDirectory.Parent == null) return false;
 
 			// .mdのファイルを取得
 			var files = new List<FileInfo>();
-			foreach (var file in targetDirectory.GetFiles("*.md", SearchOption.AllDirectories))
+			foreach (var file in targetDirectory.GetFiles(TargetMarkdownExtension, SearchOption.AllDirectories))
 			{
 				Console.WriteLine($"{file.FullName}");
 				files.Add(file);
 			}
 
 			// publicフォルダにhtml形式に変換したmdを格納
-			await Contert2HtmlAsync(targetDirectory, files);
+			await Convert2HtmlAsync(targetDirectory, files);
+			return true;
 		}
 
+		/// <summary>
+		/// マークダウンが格納されているディレクトリの探索
+		/// </summary>
 		private bool TryGetTargetDirectory(out DirectoryInfo? targetDirectory)
 		{
 			// mdが見つかるまでさかのぼる
@@ -43,9 +54,12 @@ namespace HatopopoNote
 			return false;
 		}
 
-		public async Task Contert2HtmlAsync(DirectoryInfo targetDirectory, List<FileInfo> files)
+		/// <summary>
+		/// HTMLに変換する機能の呼び出し
+		/// </summary>
+		private async Task Convert2HtmlAsync(DirectoryInfo targetDirectory, List<FileInfo> files)
 		{
-			var publicDirectoryPath = Path.Combine(targetDirectory!.Parent!.FullName, "public");
+			var publicDirectoryPath = Path.Combine(targetDirectory.Parent!.FullName, "public");
 
 			foreach (var file in files)
 			{
@@ -53,23 +67,28 @@ namespace HatopopoNote
 			}
 		}
 
+		/// <summary>
+		/// htmlファイルの作成と書き込み
+		/// </summary>
 		private async Task CreateAndWriteToFileAsync(string publicDirectoryPath, DirectoryInfo targetDirectory, FileInfo file)
 		{
+			// .htmlに変換
 			var mdFilePath = GetRelativePath(targetDirectory, file);
-			mdFilePath = mdFilePath.Replace(".md",".html");
-			var mdFile = new FileInfo(Path.Combine(publicDirectoryPath, mdFilePath));
+			var htmlFileName = mdFilePath.Replace(".md",".html");
+			var htmlFile = new FileInfo(Path.Combine(publicDirectoryPath, htmlFileName));
 
-			await CreateDirectoryIfNotExistsAsync(mdFile.Directory!);
+			await CreateDirectoryIfNotExistsAsync(htmlFile.Directory!);
 
+			// 一行ずつ読み込んで変換
 			var lines = await ReadFileLinesAsync(file);
 			var parsedLines = ParseMarkdown(lines);
 
-			await WriteToFileAsync(mdFile, parsedLines);
+			await WriteToFileAsync(htmlFile, parsedLines);
 		}
 
 		private string GetRelativePath(DirectoryInfo targetDirectory, FileInfo file)
 		{
-			return file.FullName.Replace(targetDirectory.Parent.FullName + Path.DirectorySeparatorChar, "");
+			return file.FullName.Replace(targetDirectory.Parent!.FullName + Path.DirectorySeparatorChar, "");
 		}
 
 		private async Task CreateDirectoryIfNotExistsAsync(DirectoryInfo directory)
@@ -84,13 +103,10 @@ namespace HatopopoNote
 		{
 			var lines = new List<string>();
 
-			using (var reader = new StreamReader(file.FullName))
+			using var reader = new StreamReader(file.FullName);
+			while (await reader.ReadLineAsync() is { } line)
 			{
-				string line;
-				while ((line = await reader.ReadLineAsync()) != null)
-				{
-					lines.Add(line);
-				}
+				lines.Add(line);
 			}
 
 			return lines;
@@ -99,17 +115,25 @@ namespace HatopopoNote
 		private List<string> ParseMarkdown(List<string> lines)
 		{
 			var parser = new Parser();
-			return parser.ParseMarkdown(lines.ToArray()).ToList();
+			var builder = new StringBuilder();
+			foreach (var line in lines)
+			{
+				builder.AppendLine(line);
+			}
+
+			var htmlBody = Markdig.Markdown.ToHtml(builder.ToString());
+			var list = new List<string>();
+			list.Add(htmlBody);
+			return list;
 		}
 
+		// ファイルへの書き込み
 		private async Task WriteToFileAsync(FileInfo file, List<string> lines)
 		{
-			using (var writer = new StreamWriter(file.FullName))
+			await using var writer = new StreamWriter(file.FullName);
+			foreach (var line in lines)
 			{
-				foreach (var line in lines)
-				{
-					await writer.WriteLineAsync(line);
-				}
+				await writer.WriteLineAsync(line);
 			}
 		}
 	}
