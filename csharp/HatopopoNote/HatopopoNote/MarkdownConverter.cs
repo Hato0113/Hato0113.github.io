@@ -114,7 +114,6 @@ namespace HatopopoNote
 
 		private List<string> ParseMarkdown(List<string> lines)
 		{
-			var parser = new Parser();
 			var builder = new StringBuilder();
 			foreach (var line in lines)
 			{
