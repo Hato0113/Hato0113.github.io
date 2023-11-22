@@ -9,6 +9,9 @@ namespace HatopopoNote
 		private static readonly string MarkdownDirectoryName = "md";
 		private static readonly string TargetMarkdownExtension = "*.md";
 
+		private static readonly string HtmlHeader =
+			"<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>::Title::</title>\n    <link rel=\"stylesheet\" href=\"../css/styles.css\">\n</head>";
+
 		/// <summary>
 		/// 実行エントリポイント
 		/// </summary>
@@ -130,10 +133,18 @@ namespace HatopopoNote
 		private async Task WriteToFileAsync(FileInfo file, List<string> lines)
 		{
 			await using var writer = new StreamWriter(file.FullName);
+			
+			// 先頭にヘッダーを追加
+			var header = HtmlHeader;
+			header = header.Replace("::Title::", file.Name.Replace(".html", ""));
+			await writer.WriteLineAsync(header);
+			
 			foreach (var line in lines)
 			{
 				await writer.WriteLineAsync(line);
 			}
+			
+			
 		}
 	}
 }
